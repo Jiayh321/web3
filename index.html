@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JYH的个人博客</title>
+    <style>
+      /* ===== 基础设置 ===== */
+      :root {
+        --bg: #050816;
+        --bg-soft: #0b1020;
+        --bg-softer: #111827;
+        --accent: #ff6bcb;
+        --accent-soft: rgba(255, 107, 203, 0.1);
+        --accent-2: #38bdf8;
+        --accent-2-soft: rgba(56, 189, 248, 0.1);
+        --text: #e5e7eb;
+        --text-soft: #9ca3af;
+        --border-soft: rgba(148, 163, 184, 0.25);
+        --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.85);
+        --radius-lg: 18px;
+        --radius-full: 999px;
+        --blur: 18px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* ===== 背景装饰 ===== */
+      .bg-orbit {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .bg-orbit::before,
+      .bg-orbit::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(50px);
+        opacity: 0.3;
+        mix-blend-mode: screen;
+      }
+
+      .bg-orbit::before {
+        width: 420px;
+        height: 420px;
+        background: radial-gradient(circle, #38bdf8, transparent 60%);
+        top: -120px;
+        right: -80px;
+      }
+
+      .bg-orbit::after {
+        width: 360px;
+        height: 360px;
+        background: radial-gradient(circle, #ff6bcb, transparent 60%);
+        bottom: -120px;
+        left: -40px;
+      }
+
+      /* ===== 页面布局 ===== */
+      .page-shell {
+        max-width: 1160px;
+        margin: 28px auto 40px;
+        padding: 0 20px 40px;
+      }
+
+      .glass {
+        border-radius: 26px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background: radial-gradient(circle at top left, #111827 0, #020617 55%);
+        box-shadow: var(--shadow-soft);
+        padding: 22px 22px 26px;
+        backdrop-filter: blur(var(--blur));
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-soft);
+        background: radial-gradient(circle at top, #1e293b, #020617);
+      }
+
+      .brand-text-title {
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        font-size: 1rem;
+      }
+
+      .brand-text-sub {
+        font-size: 0.72rem;
+        color: var(--text-soft);
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 0.86rem;
+      }
+
+      .nav-link {
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: var(--text-soft);
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--text);
+        border-color: rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      .nav-btn {
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        border: 1px solid rgba(248, 250, 252, 0.8);
+        background: radial-gradient(circle at top left, #22c55e 0, #15803d 45%);
+        color: #e5f9ef;
+        box-shadow: 0 14px 25px rgba(21, 128, 61, 0.55);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .nav-btn span.icon {
+        font-size: 1.1rem;
+      }
+
+      /* ===== 主体区域 ===== */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 3fr 2fr;
+        gap: 22px;
+        align-items: flex-start;
+      }
+
+      /* ===== 左侧：个人信息 + 文章 ===== */
+      .hero-card {
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        background: radial-gradient(circle at top left, #020617 0, #020617 40%, #0f172a 90%);
+        overflow: hidden;
+        position: relative;
+        padding: 18px 18px 18px;
+      }
+
+      .hero-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+        gap: 18px;
+        align-items: center;
+      }
+
+      .hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        font-size: 0.72rem;
+        color: var(--text-soft);
+        margin-bottom: 10px;
+      }
+
+      .hero-kicker-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: radial-gradient(circle at top left, #22c55e 0, #16a34a 60%);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+      }
+
+      .hero-title {
+        font-size: clamp(1.9rem, 2.2vw, 2.3rem);
+        line-height: 1.25;
+        font-weight: 700;
+        margin-bottom: 8px;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-title span.accent {
+        background: linear-gradient(120deg, #38bdf8, #a855f7, #f97316);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .hero-subtitle {
+        font-size: 0.92rem;
+        color: var(--text-soft);
+        margin-bottom: 14px;
+      }
+
+      .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .hero-tag {
+        font-size: 0.7rem;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text-soft);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      .btn-primary {
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #38bdf8, #6366f1);
+        color: #e5f3ff;
+        font-size: 0.88rem;
+        cursor: pointer;
+        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.5);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-primary span.icon {
+        font-size: 1rem;
+      }
+
+      .btn-ghost {
+        padding: 7px 14px;
+        border-radius: 999px;
+        border: 1px dashed rgba(148, 163, 184, 0.9);
+        background: rgba(15, 23, 42, 0.7);
+        color: var(--text-soft);
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+      }
+
+      .btn-ghost span.icon {
+        font-size: 1.05rem;
+      }
+
+      .hero-photo-wrap {
+        position: relative;
+        border-radius: 22px;
+        padding: 5px;
+        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.5), rgba(148, 163, 184, 0.1));
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+      }
+
+      .hero-photo-frame {
+        border-radius: 18px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: radial-gradient(circle at top, #020617 0, #020617 100%);
+      }
+
+      .hero-photo-frame img {
+        width: 100%;
+        height: 230px;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .hero-floating {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        backdrop-filter: blur(10px);
+        font-size: 0.78rem;
+      }
+
+      .hero-floating-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: radial-gradient(circle at top left, #38bdf8 0, #0ea5e9 60%);
+        box-shadow: 0 0 12px rgba(56, 189, 248, 1);
+      }
+
+      /* ===== 文章列表 ===== */
+      .post-section {
+        margin-top: 22px;
+      }
+
+      .section-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .section-title {
+        font-size: 0.96rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-soft);
+      }
+
+      .section-badge {
+        font-size: 0.72rem;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.55);
+        color: var(--text-soft);
+      }
+
+      .post-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .post-card {
+        display: grid;
+        grid-template-columns: minmax(0, 5fr) minmax(0, 3fr);
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+        cursor: pointer;
+        transition: transform 0.18s ease, box-shadow 0.18s ease,
+          border-color 0.18s ease;
+      }
+
+      .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 35px rgba(15, 23, 42, 0.85);
+        border-color: rgba(148, 163, 184, 0.6);
+      }
+
+      .post-main-title {
+        font-size: 0.96rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.74rem;
+        color: var(--text-soft);
+        margin-bottom: 4px;
+      }
+
+      .post-chip {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .post-excerpt {
+        font-size: 0.8rem;
+        color: var(--text-soft);
+      }
+
+      .post-cover {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: radial-gradient(circle at top, #020617, #020617);
+      }
+
+      .post-cover img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      /* ===== 右侧：侧边栏 ===== */
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .card {
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-soft);
+        background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.94), rgba(15, 23, 42, 0.98));
+        padding: 14px 14px 14px;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .card-subtitle {
+        font-size: 0.72rem;
+        color: var(--text-soft);
+      }
+
+      .profile {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+      }
+
+      .profile-avatar-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        padding: 3px;
+        background: conic-gradient(from 180deg, #38bdf8, #a855f7, #f97316, #38bdf8);
+      }
+
+      .profile-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid #020617;
+        background: radial-gradient(circle at top, #020617, #020617);
+      }
+
+      .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .profile-name {
+        font-size: 0.92rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .profile-role {
+        font-size: 0.75rem;
+        color: var(--text-soft);
+        margin-bottom: 4px;
+      }
+
+      .profile-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 6px;
+      }
+
+      .profile-tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.6);
+      }
+
+      .profile-links {
+        display: flex;
+        gap: 8px;
+      }
+
+      .profile-link {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        color: var(--text-soft);
+      }
+
+      .timeline {
+        display: grid;
+        gap: 12px;
+        margin-top: 6px;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .timeline-dot-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .timeline-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 999px;
+        background: radial-gradient(circle at top left, #f97316 0, #ea580c 60%);
+        box-shadow: 0 0 12px rgba(234, 88, 12, 0.9);
+      }
+
+      .timeline-line {
+        flex: 1;
+        width: 2px;
+        background: linear-gradient(to bottom, rgba(148, 163, 184, 0.6), transparent);
+        margin-top: 3px;
+      }
+
+      .timeline-content-title {
+        font-size: 0.82rem;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .timeline-content-meta {
+        font-size: 0.72rem;
+        color: var(--text-soft);
+        margin-bottom: 2px;
+      }
+
+      .timeline-content-desc {
+        font-size: 0.78rem;
+        color: var(--text-soft);
+      }
+
+      .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag-pill {
+        font-size: 0.74rem;
+        padding: 5px 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text-soft);
+      }
+
+      .mini-gallery {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .mini-thumb {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: radial-gradient(circle at top, #020617, #020617);
+      }
+
+      .mini-thumb img {
+        width: 100%;
+        height: 68px;
+        object-fit: cover;
+        cursor: zoom-in;
+      }
+
+      /* ===== 订阅弹出：爱你哟 ===== */
+      .love-popup {
+        position: fixed;
+        left: 50%;
+        top: 40%;
+        transform: translate(-50%, -50%);
+        padding: 14px 22px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(248, 113, 113, 0.85);
+        color: #fecaca;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+        z-index: 50;
+        animation: love-pop 3s ease-out forwards;
+      }
+
+      .love-text {
+        letter-spacing: 0.08em;
+      }
+
+      .love-heart {
+        color: #ef4444;
+        font-size: 1.3rem;
+        filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8));
+      }
+
+      @keyframes love-pop {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -40%) scale(0.85);
+        }
+        15% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        70% {
+          opacity: 1;
+          transform: translate(-50%, -52%) scale(1.02);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -60%) scale(0.9);
+        }
+      }
+
+      /* ===== 相册大图预览 ===== */
+      .image-lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 40;
+        backdrop-filter: blur(6px);
+        animation: fade-in 0.25s ease-out;
+      }
+
+      .image-lightbox img {
+        max-width: 92vw;
+        max-height: 88vh;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        box-shadow: 0 22px 45px rgba(15, 23, 42, 0.95);
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* ===== 页脚 ===== */
+      footer {
+        margin-top: 20px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(148, 163, 184, 0.4);
+        font-size: 0.75rem;
+        color: var(--text-soft);
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      footer span.accent {
+        color: #38bdf8;
+      }
+
+      /* ===== 响应式 ===== */
+      @media (max-width: 880px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-inner {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-photo-frame img {
+          height: 210px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page-shell {
+          margin-top: 14px;
+          padding: 0 14px 26px;
+        }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        nav {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .hero-card {
+          padding: 14px 14px 14px;
+        }
+
+        .post-card {
+          grid-template-columns: 1.3fr 1.1fr;
+        }
+
+        footer {
+          flex-direction: column;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .post-card {
+          grid-template-columns: 1fr;
+        }
+
+        .post-cover img {
+          height: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 背景光效 -->
+    <div class="bg-orbit"></div>
+
+    <div class="page-shell">
+      <div class="glass">
+        <!-- 顶部导航 -->
+        <header>
+          <div class="brand">
+            <!--
+              修改头像：
+              请在本文件同一文件夹下放置一张名为 avatar.jpg 的图片，
+              即可替换这里显示的个人头像。
+            -->
+            <div class="brand-avatar">
+              <img src="avatar.jpg" alt="个人头像" />
+            </div>
+            <div>
+              <div class="brand-text-title">JYH的个人博客  Personal Notes</div>
+              <div class="brand-text-sub">记录自己的网站、设计、代码和优秀的应用</div>
+            </div>
+          </div>
+          <nav>
+            <a href="#posts" class="nav-link">文章</a>
+            <a href="#about" class="nav-link">关于我</a>
+            <a href="#gallery" class="nav-link">相册</a>
+            <a href="#contact" class="nav-btn">
+              <span class="icon">✉</span>
+              <span>联系我</span>
+            </a>
+          </nav>
+        </header>
+
+        <main class="main-grid">
+          <!-- 左侧主内容 -->
+          <section>
+            <!-- 个人简介 + 顶部大图 -->
+            <section class="hero-card" id="about">
+              <div class="hero-inner">
+                <div>
+                  <div class="hero-kicker">
+                    <span class="hero-kicker-dot"></span>
+                    <span>每天都要开心呀</span>
+                  </div>
+                  <h1 class="hero-title">
+                    你好，我是 <span class="accent">yiya</span><br />
+                    一名热爱软件的爱好者。
+                  </h1>
+                  <p class="hero-subtitle">
+                    在这里，我会分享个人网站和一些所见所想。
+                    每一篇文章，都是一次自我对话与世界连接。
+                  </p>
+                  <div class="hero-tags">
+                    <span class="hero-tag">Web Design</span>
+                    <span class="hero-tag">Frontend Dev</span>
+                    <span class="hero-tag">Life Log</span>
+                    <span class="hero-tag">Minimalism</span>
+                  </div>
+                  <div class="hero-actions">
+                    <button class="btn-primary" type="button" id="btn-read-posts">
+                      <span>开始阅读博客</span>
+                      <span class="icon">➜</span>
+                    </button>
+                    <button class="btn-ghost" type="button" id="btn-subscribe">
+                      <span class="icon">◎</span>
+                      <span>订阅我的更新</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="hero-photo-wrap">
+                  <div class="hero-photo-frame">
+                    <!--
+                      修改顶部横幅图片：
+                      在同一文件夹下放置一张名为 hero.jpg 的图片，
+                      即可改变这里的封面效果图。
+                    -->
+                    <img src="hero.jpg" alt="博客封面" />
+                    <div class="hero-floating">
+                      <span class="hero-floating-dot"></span>
+                      <span>写下此刻 · 让时间成为最温柔的收藏。</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 文章列表 -->
+            <section class="post-section" id="posts">
+              <div class="section-title-row">
+                <h2 class="section-title">LATEST POSTS</h2>
+                <span class="section-badge">最近更新 · 3 篇精选</span>
+              </div>
+
+              <div class="post-list">
+                <!-- 文章一 -->
+                <article
+                  class="post-card"
+                  data-url="https://www.jyh321.indevs.in"
+                >
+                  <div>
+                    <h3 class="post-main-title">博客上线了</h3>
+                    <div class="post-meta">
+                      <span>2026 </span>
+                      <span>阅读时间 6 分钟</span>
+                      <span class="post-chip">随想 / 生活</span>
+                    </div>
+                    <p class="post-excerpt">
+                      有时候，我们以为自己在解决 bug，但其实是在不断重构生活。
+                      深夜的编辑器、微亮的屏幕，是与自己对话最安静的方式。
+                    </p>
+                  </div>
+                  <div class="post-cover">
+                    <!--
+                      修改文章封面 1：
+                      hero-post-1.jpg 文件用于展示该文章封面，
+                      替换同名图片即可修改。
+                    -->
+                    <img src="hero-post-1.jpg" alt="文章封面一" />
+                  </div>
+                </article>
+
+                <!-- 文章二 -->
+                <article
+                  class="post-card"
+                  data-url="https://www.jyh123.de5.net/"
+                >
+                  <div>
+                    <h3 class="post-main-title">设计一页温柔的网页，让用户“住”进来</h3>
+                    <div class="post-meta">
+                      <span>2025 · 12 · 02</span>
+                      <span>阅读时间 8 分钟</span>
+                      <span class="post-chip">设计 / UX</span>
+                    </div>
+                    <p class="post-excerpt">
+                      好的网页不只是视觉炫酷，而是让人愿意停留。
+                      色彩、留白、信息架构，一点点搭建出一个“线上居所”。
+                    </p>
+                  </div>
+                  <div class="post-cover">
+                    <!-- hero-post-2.jpg 为文章二封面 -->
+                    <img src="hero-post-2.jpg" alt="文章封面二" />
+                  </div>
+                </article>
+
+                <!-- 文章三 -->
+                <article
+                  class="post-card"
+                  data-url="https://www.juh321.indevs.in/"
+                >
+                  <div>
+                    <h3 class="post-main-title">海内存知己，天涯若比邻。</h3>
+                    <div class="post-meta">
+                      <span>2026 </span>
+                      <span>阅读时间 5 分钟</span>
+                      <span class="post-chip">优秀图片</span>
+                    </div>
+                    <p class="post-excerpt">
+                    聊天软件，连接你我他也是那个她。
+                    </p>
+                  </div>
+                  <div class="post-cover">
+                    <!-- hero-post-3.jpg 为文章三封面 -->
+                    <img src="hero-post-3.jpg" alt="文章封面三" />
+                  </div>
+                </article>
+              </div>
+            </section>
+          </section>
+
+          <!-- 右侧侧边栏 -->
+          <aside class="sidebar">
+            <!-- 个人卡片 -->
+            <section class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">关于我</div>
+                  <div class="card-subtitle">一点点标签 · 一点点生活</div>
+                </div>
+                <span style="font-size: 1.1rem">✦</span>
+              </div>
+
+              <div class="profile">
+                <div class="profile-avatar-wrap">
+                  <!--
+                    与顶部不同，这里同样使用 avatar.jpg，
+                    让头像在两个位置同时保持一致。
+                  -->
+                  <div class="profile-avatar">
+                    <img src="avatar.jpg" alt="个人头像" />
+                  </div>
+                </div>
+                <div>
+                  <div class="profile-name">yiya</div>
+                  <div class="profile-role">先进技术爱好者 / 生活记录者</div>
+                  <div class="profile-tags">
+                    <span class="profile-tag">科技爱好者</span>
+                    <span class="profile-tag">咖啡驱动</span>
+                  </div>
+                  <div class="profile-links" id="contact">
+                    <a href="mailto:yourname@example.com" class="profile-link" title="Email">✉</a>
+                    <a href="#" class="profile-link" title="GitHub">GH</a>
+                    <a href="#" class="profile-link" title="微博">微</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 时间线 -->
+            <section class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">最近的三件小事</div>
+                  <div class="card-subtitle">Life Timeline</div>
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-soft)">2025 ~ 2026</span>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-dot-col">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div>
+                    <div class="timeline-content-title">重新设计了自己的博客</div>
+                    <div class="timeline-content-meta">给自己的软件库添加了一个网页</div>
+                    <p class="timeline-content-desc">
+                      部署了一个实时聊天平台，只想做一个自己也愿意每天点开看一眼的地方。
+                    </p>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-dot-col">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                  </div>
+                  <div>
+                    <div class="timeline-content-title">寻找美丽瞬间</div>
+                    <div class="timeline-content-meta">写给自己，也写给未来的某个你</div>
+                    <p class="timeline-content-desc">
+                      不是为了流量，只是想记录下那些稍纵即逝，却又真实发生的瞬间。
+                    </p>
+                  </div>
+                </div>
+
+                <div class="timeline-item">
+                  <div class="timeline-dot-col">
+                    <div class="timeline-dot"></div>
+                  </div>
+                  <div>
+                    <div class="timeline-content-title">把相册里的碎片变成了相册页</div>
+                    <div class="timeline-content-meta">照片是时间的书签</div>
+                    <p class="timeline-content-desc">
+                      也许某一天，你会在照片里看见一个更勇敢的自己。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 标签 + 相册 -->
+            <section class="card" id="gallery">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">主题标签</div>
+                  <div class="card-subtitle">Tag Cloud</div>
+                </div>
+                <span style="font-size: 0.9rem; color: var(--text-soft)">∞</span>
+              </div>
+
+              <div class="tag-cloud">
+                <span class="tag-pill">#日常</span>
+                <span class="tag-pill">#前端碎片</span>
+                <span class="tag-pill">#深夜记录</span>
+                <span class="tag-pill">#桌面一隅</span>
+                <span class="tag-pill">#旅行瞬间</span>
+                <span class="tag-pill">#书与电影</span>
+              </div>
+
+              <div style="margin-top: 12px; margin-bottom: 8px; font-size: 0.78rem; color: var(--text-soft);">
+                相册一角 · 用三张小图拼出此刻心情
+              </div>
+
+              <div class="mini-gallery">
+                <!--
+                  修改小图相册：
+                  gallery-1.jpg, gallery-2.jpg, gallery-3.jpg
+                  分别对应下面三张缩略图。
+                -->
+                <div class="mini-thumb">
+                  <img src="gallery-1.jpg" alt="相册一" />
+                </div>
+                <div class="mini-thumb">
+                  <img src="gallery-2.jpg" alt="相册二" />
+                </div>
+                <div class="mini-thumb">
+                  <img src="gallery-3.jpg" alt="相册三" />
+                </div>
+              </div>
+            </section>
+          </aside>
+        </main>
+
+        <footer>
+          <div>
+            © <span id="year"></span> JYH · Personal Blog.
+          </div>
+          <div>
+            Designed with <span class="accent">light & code</span> ·
+            欢迎来和我聊聊你的故事。
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      // 自动填充年份
+      document.getElementById("year").textContent =
+        new Date().getFullYear().toString();
+
+      // 点击「开始阅读博客」滚动到文章区域
+      const readBtn = document.getElementById("btn-read-posts");
+      const postsSection = document.getElementById("posts");
+      if (readBtn && postsSection) {
+        readBtn.addEventListener("click", () => {
+          postsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+
+      // 点击文章卡片，跳转到对应网址（新标签页）
+      document.querySelectorAll(".post-card").forEach((card) => {
+        const url = card.getAttribute("data-url");
+        if (!url) return;
+        card.addEventListener("click", () => {
+          window.open(url, "_blank");
+        });
+      });
+
+      // 点击「订阅我的更新」弹出可爱的“爱你哟”+ 红心，3 秒后自动淡出消失
+      const subscribeBtn = document.getElementById("btn-subscribe");
+
+      function showLovePopup() {
+        const popup = document.createElement("div");
+        popup.className = "love-popup";
+        popup.innerHTML =
+          '<span class="love-text">爱你哟</span><span class="love-heart">❤</span>';
+        document.body.appendChild(popup);
+
+        // 3 秒后移除节点（动画时长也是 3 秒）
+        setTimeout(() => {
+          popup.remove();
+        }, 3000);
+      }
+
+      if (subscribeBtn) {
+        subscribeBtn.addEventListener("click", showLovePopup);
+      }
+
+      // 点击右下角相册小图，放大预览
+      const miniImages = document.querySelectorAll(".mini-thumb img");
+
+      function openLightbox(src, alt) {
+        const overlay = document.createElement("div");
+        overlay.className = "image-lightbox";
+        overlay.innerHTML = `<img src="${src}" alt="${alt || ""}">`;
+
+        // 点击遮罩任意位置关闭
+        overlay.addEventListener("click", () => {
+          overlay.remove();
+        });
+
+        document.body.appendChild(overlay);
+      }
+
+      miniImages.forEach((img) => {
+        img.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openLightbox(img.src, img.alt);
+        });
+      });
+    </script>
+  </body>
+  </html>
+
